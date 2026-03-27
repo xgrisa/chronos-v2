@@ -1,0 +1,13 @@
+# Variables de entorno — nunca al repo
+.env
+
+# Dependencias
+frontend/node_modules/
+backend/node_modules/
+
+# Build de Angular
+frontend/dist/
+frontend/.angular/
+
+# Logs
+*.log

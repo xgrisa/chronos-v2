@@ -1,0 +1,41 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: chronos-postgres
+    environment:
+      POSTGRES_DB: chronos
+      POSTGRES_USER: chronos
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - chronos-internal
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: chronos-backend
+    ports:
+      - "3000:3000" # exponemos el puerto para poder probarlo con Postman directamente
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: chronos
+      PGUSER: chronos
+      PGPASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: 3000
+    depends_on:
+      - postgres
+    networks:
+      - chronos-internal
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  chronos-internal:
+    driver: bridge
