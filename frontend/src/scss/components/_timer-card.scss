@@ -1,0 +1,4 @@
+// El display del tiempo usa cifras de ancho fijo para que los dígitos no "bailen" al cambiar de valor
+.timer-display {
+  font-variant-numeric: tabular-nums;
+}

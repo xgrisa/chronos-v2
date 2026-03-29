@@ -1,0 +1,18 @@
+// ── Chronos v2 — Main Stylesheet ───────────────────────────────
+// Patrón 7-1: cada carpeta tiene una responsabilidad única.
+// Este fichero solo importa; la lógica va en cada parcial.
+
+// Abstracts (no generan CSS por sí solos)
+@use 'scss/abstracts/variables';
+
+// Base
+@use 'scss/base/base';
+
+// Layout
+@use 'scss/layout/navbar';
+
+// Components
+@use 'scss/components/timer-card';
+
+// Pages
+@use 'scss/pages/login';

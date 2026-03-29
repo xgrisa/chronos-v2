@@ -1,0 +1,95 @@
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container">
+    <span class="navbar-brand mb-0 h1">⏱️ Chronos</span>
+
+    <div>
+      <button (click)="toggleArchivedView()"
+              class="btn btn-sm me-2"
+              [ngClass]="viewArchived ? 'btn-warning' : 'btn-outline-light'">
+        <i class="bi bi-clock-history"></i>
+        {{ viewArchived ? 'Ver Activos' : 'Ver Histórico' }}
+      </button>
+      <button (click)="logout()" class="btn btn-outline-light btn-sm">Salir</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container pt-4">
+
+  <!-- Formulario de creación — solo visible en la vista activa -->
+  <div class="row justify-content-center mb-5" *ngIf="!viewArchived">
+    <div class="col-md-6">
+      <div class="input-group">
+        <input type="text"
+               class="form-control"
+               placeholder="Nombre del nuevo cronómetro..."
+               [(ngModel)]="newTimerLabel"
+               (keyup.enter)="createTimer()">
+        <button class="btn btn-primary" (click)="createTimer()">
+          <i class="bi bi-plus-lg"></i> Crear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <h4 *ngIf="viewArchived" class="text-center text-warning mb-4">
+    📂 Archivo Histórico
+  </h4>
+
+  <!-- Grid de cronómetros -->
+  <div class="row">
+    <div class="col-md-4 mb-4" *ngFor="let timer of timers">
+      <div class="card text-center shadow-sm h-100"
+           [ngClass]="{'border-primary': timer.is_running, 'border-warning': viewArchived}">
+
+        <div class="card-header d-flex justify-content-between align-items-center bg-white">
+          <strong class="text-truncate" title="{{ timer.label }}">{{ timer.label }}</strong>
+          <button *ngIf="!viewArchived"
+                  class="btn btn-sm text-danger"
+                  (click)="deleteTimer(timer.id)"
+                  title="Archivar">✕</button>
+        </div>
+
+        <div class="card-body">
+          <!-- Display del tiempo -->
+          <h2 class="display-4 font-monospace timer-display my-3"
+              [ngClass]="{'text-primary': timer.is_running, 'text-muted': !timer.is_running}">
+            {{ timer.formattedTime }}
+          </h2>
+
+          <!-- Controles — vista activa -->
+          <div *ngIf="!viewArchived" class="btn-group w-100" role="group">
+            <button *ngIf="!timer.is_running"
+                    (click)="control(timer.id, 'start')"
+                    class="btn btn-success">
+              Iniciar
+            </button>
+            <button *ngIf="timer.is_running"
+                    (click)="control(timer.id, 'pause')"
+                    class="btn btn-warning">
+              Pausar
+            </button>
+            <button (click)="control(timer.id, 'reset')" class="btn btn-outline-secondary">
+              Reset
+            </button>
+          </div>
+
+          <!-- Controles — vista histórico -->
+          <div *ngIf="viewArchived" class="d-grid">
+            <button (click)="restoreTimer(timer.id)" class="btn btn-info text-white">
+              ♻️ Restaurar
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="timers.length === 0" class="col-12 text-center text-muted mt-5">
+      <h4 *ngIf="!viewArchived">No tienes cronómetros activos</h4>
+      <h4 *ngIf="viewArchived">No hay cronómetros en el histórico</h4>
+    </div>
+  </div>
+
+</div>

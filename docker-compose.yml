@@ -17,8 +17,6 @@ services:
   backend:
     build: ./backend
     container_name: chronos-backend
-    ports:
-      - "3000:3000" # exponemos el puerto para poder probarlo con Postman directamente
     environment:
       PGHOST: postgres
       PGPORT: 5432
@@ -33,9 +31,29 @@ services:
       - chronos-internal
     restart: unless-stopped
 
+  frontend:
+    build: ./frontend
+    container_name: chronos-frontend
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - chronos-internal
+      - proxy
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chronos.rule=Host(`chronos.xgsdev.com`)"
+      - "traefik.http.routers.chronos.entrypoints=websecure"
+      - "traefik.http.routers.chronos.tls.certresolver=myresolver"
+      - "traefik.http.services.chronos.loadbalancer.server.port=80"
+
 volumes:
   postgres_data:
 
 networks:
   chronos-internal:
     driver: bridge
+  proxy:
+    external: true
